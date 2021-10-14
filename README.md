@@ -1,2 +1,2 @@
 # roguelike_sandbox
-A fake 2D game
+A fake 3D game
