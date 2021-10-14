@@ -1,7 +1,17 @@
 package com.roguelike_sandbox.character;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
+
 public abstract class Entity {
 
+
+    public static final double GROUND_FRICTION = 0.9D;
+    public static final int SPRITE_SIZE = 50;
+    private final SpriteBatch batch;
     private final int level;
     private final int vitality;
     private final int constitution;
@@ -10,12 +20,16 @@ public abstract class Entity {
     private final int intelligence;
     private final int luck;
     private final double stamina;
-
+    private Sprite sprite;
+    private Texture texture;
+    private Vector2 velocity;
+    private Vector2 position;
     private double health;
     private double maxHealth;
     private double maxStamina;
     private double dodgeChance;
     private double critChance;
+    private double charisma;
 
     private double physicDamage;
     private double magicDamage;
@@ -23,7 +37,9 @@ public abstract class Entity {
     private double magicResistance;
     private double movementSpeed;
 
-    public Entity(int level, int vitality, int constitution, int strength, int dexterity, int intelligence, int luck) {
+    public Entity(SpriteBatch batch, Vector2 position, int level, int vitality, int constitution, int strength, int dexterity, int intelligence, int luck, EntityTexture texture) {
+        this.velocity = new Vector2(0, 0);
+        this.position = position;
         this.level = level;
         this.vitality = vitality;
         this.constitution = constitution;
@@ -32,10 +48,40 @@ public abstract class Entity {
         this.intelligence = intelligence;
         this.luck = luck;
 
+        this.batch = batch;
+
+        setTexture(texture);
         calculateStats();
 
         health = maxHealth;
         stamina = maxStamina;
+    }
+
+    public Entity(SpriteBatch batch, Vector2 position, EntityTexture texture) {//test only
+        this.velocity = new Vector2(0, 0);
+        this.position = position;
+        this.level = 2;
+        this.vitality = 2;
+        this.constitution = 2;
+        this.strength = 2;
+        this.dexterity = 2;
+        this.intelligence = 2;
+        this.luck = 2;
+
+        this.batch = batch;
+
+        setTexture(texture);
+        calculateStats();
+
+        health = maxHealth;
+        stamina = maxStamina;
+    }
+
+    private void setTexture(EntityTexture texture) {
+        this.texture = new Texture(Gdx.files.internal(texture.texture));
+        sprite = new Sprite(this.texture, SPRITE_SIZE, SPRITE_SIZE);
+        sprite.setPosition(23, 23);
+        sprite.draw(batch);
     }
 
     private void calculateStats() {
@@ -52,7 +98,9 @@ public abstract class Entity {
         magicResistance = constitution * 2 + vitality * 3;
         movementSpeed = dexterity * 3;
 
-        consoleOutStats();
+        charisma = ((float) vitality * 3f + (float) constitution * 4f + (float) intelligence * 4f) * (health / maxHealth);
+
+        //consoleOutStats();
     }
 
     private void consoleOutStats() {
@@ -107,6 +155,10 @@ public abstract class Entity {
         return movementSpeed;
     }
 
+    public double getCharisma() {
+        return charisma;
+    }
+
     private void heal(double amount) {
         health += amount;
         if (health >= maxHealth) {
@@ -131,6 +183,20 @@ public abstract class Entity {
 
     private void damageMagical(Entity damager) {
         damage(damager, (100D / (100D + magicResistance)) * damager.getMagicDamage());
+    }
+
+    private void setPosition(Vector2 newPosition) {
+        position = newPosition;
+    }
+
+    public void move(Vector2 direction) {
+        direction.setLength((float) (movementSpeed / 10f));
+        velocity = velocity.add(direction);
+        if (velocity.len() > movementSpeed / 10f) {
+            velocity.setLength((float) movementSpeed);
+        }
+        setPosition(position.add(velocity));
+        velocity.setLength((float) (velocity.len() * GROUND_FRICTION));
     }
 
     public abstract void kill();
