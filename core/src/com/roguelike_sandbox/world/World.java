@@ -20,9 +20,7 @@ public class World {
     OrthographicCamera camera;
     TiledMap tiledMap;
     TiledMapRenderer tiledMapRenderer;
-
-    Texture tex;
-    Texture tex1;
+    TileTextureProvider textureProvider;
 
     public World() {
         float w = Gdx.graphics.getWidth();
@@ -30,15 +28,13 @@ public class World {
 
         seed = new Random().nextInt(Integer.MAX_VALUE);
 
-        tex = new Texture(Gdx.files.internal("images/ashlands/2x_RMVX/tf_A2_ashlands_2.png"));
-        tex1 = new Texture(Gdx.files.internal("images/ashlands/2x_RMVX/tf_A1_ashlands_2.png"));
-
         camera = new OrthographicCamera();
         camera.setToOrtho(false, w, h);
         camera.update();
 
         tiledMap = new TiledMap();
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+        textureProvider = new TileTextureProvider();
     }
 
     public void setCameraPos(double x, double y) {
@@ -54,9 +50,9 @@ public class World {
         TiledMapTileLayer layer1 = new TiledMapTileLayer(1000, 800, World.TILE_SIZE, World.TILE_SIZE);
 
         TiledMapTileLayer.Cell dirtCell = new TiledMapTileLayer.Cell();
-        dirtCell.setTile(new StaticTiledMapTile(new TextureRegion(tex, 0, 0, 32, 32)));
+        dirtCell.setTile(new StaticTiledMapTile(textureProvider.getTexture(TileTexture.DIRT)));
         TiledMapTileLayer.Cell lavaCell = new TiledMapTileLayer.Cell();
-        lavaCell.setTile(new StaticTiledMapTile(new TextureRegion(tex1, 0, 192, 32, 32)));
+        lavaCell.setTile(new StaticTiledMapTile(textureProvider.getTexture(TileTexture.LAVA)));
 
         for (int i = 0; i < w / World.TILE_SIZE; i++) {
             for (int j = 0; j < h / World.TILE_SIZE; j++) {
@@ -84,7 +80,6 @@ public class World {
 
     public void dispose() {
         tiledMap.dispose();
-        tex.dispose();
-        tex1.dispose();
+        textureProvider.dispose();
     }
 }
