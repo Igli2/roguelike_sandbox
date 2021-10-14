@@ -10,6 +10,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
+import com.badlogic.gdx.math.Vector2;
 
 import java.util.Random;
 
@@ -41,9 +42,9 @@ public class World {
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
     }
 
-    public void setCameraPos(double x, double y) {
-        camera.position.x = (float) x;
-        camera.position.y = (float) y;
+    public void setCameraPos(Vector2 newPosition) {
+        camera.position.x = newPosition.x;
+        camera.position.y = newPosition.y;
     }
 
     public void generateTileMap() {
@@ -60,7 +61,7 @@ public class World {
 
         for (int i = 0; i < w / World.TILE_SIZE; i++) {
             for (int j = 0; j < h / World.TILE_SIZE; j++) {
-                double noiseValue  = getNoiseValue(i, j);
+                double noiseValue = getNoiseValue(i, j);
                 if (noiseValue < -0.3) {
                     layer1.setCell(i, j, lavaCell);
                 } else {

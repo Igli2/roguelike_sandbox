@@ -23,7 +23,7 @@ public abstract class Entity {
     private Sprite sprite;
     private Texture texture;
     private Vector2 velocity;
-    private Vector2 position;
+    protected Vector2 position;
     private double health;
     private double maxHealth;
     private double maxStamina;
@@ -189,12 +189,15 @@ public abstract class Entity {
         position = newPosition;
     }
 
-    public void move(Vector2 direction) {
+    public void addForce(Vector2 direction) {
         direction.setLength((float) (movementSpeed / 10f));
         velocity = velocity.add(direction);
         if (velocity.len() > movementSpeed / 10f) {
             velocity.setLength((float) movementSpeed);
         }
+    }
+
+    public void move(Vector2 direction) {
         setPosition(position.add(velocity));
         velocity.setLength((float) (velocity.len() * GROUND_FRICTION));
     }
