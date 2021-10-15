@@ -8,8 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 
 public abstract class Entity {
 
-
-    public static final double GROUND_FRICTION = 0.9D;
+    public static final double GROUND_FRICTION = 0.7D;
     public static final int SPRITE_SIZE = 50;
     private final SpriteBatch batch;
     private final int level;
@@ -20,10 +19,10 @@ public abstract class Entity {
     private final int intelligence;
     private final int luck;
     private final double stamina;
+    protected Vector2 position;
     private Sprite sprite;
     private Texture texture;
     private Vector2 velocity;
-    protected Vector2 position;
     private double health;
     private double maxHealth;
     private double maxStamina;
@@ -76,6 +75,11 @@ public abstract class Entity {
         health = maxHealth;
         stamina = maxStamina;
     }
+
+    public abstract void run();
+
+    public abstract void kill();
+
 
     private void setTexture(EntityTexture texture) {
         this.texture = new Texture(Gdx.files.internal(texture.texture));
@@ -187,20 +191,23 @@ public abstract class Entity {
 
     private void setPosition(Vector2 newPosition) {
         position = newPosition;
+        sprite.setPosition(position.x, position.y);
     }
 
     public void addForce(Vector2 direction) {
         direction.setLength((float) (movementSpeed / 10f));
         velocity = velocity.add(direction);
-        if (velocity.len() > movementSpeed / 10f) {
+        if (velocity.len() > movementSpeed / 20f) {
             velocity.setLength((float) movementSpeed);
         }
     }
 
-    public void move(Vector2 direction) {
+    public void move() {
         setPosition(position.add(velocity));
         velocity.setLength((float) (velocity.len() * GROUND_FRICTION));
     }
 
-    public abstract void kill();
+    public void render() {
+        sprite.draw(batch);
+    }
 }

@@ -2,9 +2,9 @@ package com.roguelike_sandbox.items;
 
 public class Item {
 
-    ItemRarity rarity;
-    String name;
-    String description;
+    private ItemRarity rarity;
+    private String name;
+    private String description;
 
     public Item() {
 
