@@ -5,12 +5,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.roguelike_sandbox.character.EntityManager;
 import com.roguelike_sandbox.input.InputListener;
-import com.roguelike_sandbox.world.World;
+import com.roguelike_sandbox.world.RoguelikeWorld;
 
 public class RoguelikeSandbox extends ApplicationAdapter {
 
     SpriteBatch batch;
-    World world;
+    RoguelikeWorld world;
     InputListener listener;
     EntityManager entityManager;
 
@@ -19,7 +19,7 @@ public class RoguelikeSandbox extends ApplicationAdapter {
         batch = new SpriteBatch();
 
         listener = new InputListener();
-        world = new World();
+        world = new RoguelikeWorld();
         // world.generateTileMap();
 
         entityManager = new EntityManager(batch, world);

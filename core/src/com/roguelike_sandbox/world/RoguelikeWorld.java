@@ -2,18 +2,32 @@ package com.roguelike_sandbox.world;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.MapObjects;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.*;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 
-public class World {
+public class RoguelikeWorld {
+
+    private static final int TILE_SIZE = 32;
+
     // private final int seed;
 
-    OrthographicCamera camera;
-    TiledMap tiledMap;
-    TiledMapRenderer tiledMapRenderer;
+    private final OrthographicCamera camera;
+    private final TiledMap tiledMap;
+    private final TiledMapRenderer tiledMapRenderer;
+    private final World box2DWorld;
+    private Array<Body> bodies;
 
-    public World() {
+    public RoguelikeWorld() {
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
 
@@ -24,7 +38,9 @@ public class World {
         camera.setToOrtho(false, w, h);
         camera.update();
 
+        box2DWorld = new World(new Vector2(0, 0), true);
         tiledMap = new TmxMapLoader().load("tilemaps/lobby.tmx");
+        createBodies();
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
     }
 
@@ -67,6 +83,34 @@ public class World {
         camera.update();
         tiledMapRenderer.setView(camera);
         tiledMapRenderer.render();
+    }
+
+    public void createBodies() {
+        MapObjects objects = tiledMap.getLayers().get("Colliders").getObjects();
+        bodies = new Array<>();
+
+        for (MapObject obj : objects) {
+            if (obj instanceof RectangleMapObject) {
+                RectangleMapObject rectObj = (RectangleMapObject) obj;
+                // rectObj.getRectangle()
+                PolygonShape shape = RoguelikeWorld.createPolygon(rectObj);
+
+                BodyDef bd = new BodyDef();
+                bd.type = BodyDef.BodyType.StaticBody;
+                Body body = box2DWorld.createBody(bd);
+                body.createFixture(shape, 1);
+
+                bodies.add(body);
+            }
+        }
+    }
+
+    private static PolygonShape createPolygon(RectangleMapObject rectangleObject) {
+        Rectangle rectangle = rectangleObject.getRectangle();
+        PolygonShape polygon = new PolygonShape();
+        Vector2 size = new Vector2((rectangle.x + rectangle.width * 0.5f) / RoguelikeWorld.TILE_SIZE, (rectangle.y + rectangle.height * 0.5f) / RoguelikeWorld.TILE_SIZE);
+        polygon.setAsBox(rectangle.width * 0.5f / RoguelikeWorld.TILE_SIZE, rectangle.height * 0.5f / RoguelikeWorld.TILE_SIZE, size, 0.0f);
+        return polygon;
     }
 
     public void dispose() {
