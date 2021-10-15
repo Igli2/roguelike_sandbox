@@ -81,7 +81,7 @@ public abstract class Entity {
         this.texture = new Texture(Gdx.files.internal(texture.texture));
         sprite = new Sprite(this.texture, SPRITE_SIZE, SPRITE_SIZE);
         sprite.setPosition(23, 23);
-        sprite.draw(batch);
+        // sprite.draw(batch);
     }
 
     private void calculateStats() {

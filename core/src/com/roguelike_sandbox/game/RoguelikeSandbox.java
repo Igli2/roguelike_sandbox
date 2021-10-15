@@ -20,7 +20,7 @@ public class RoguelikeSandbox extends ApplicationAdapter {
 
         listener = new InputListener();
         world = new World();
-        world.generateTileMap();
+        // world.generateTileMap();
 
         entityManager = new EntityManager(batch, world);
     }
