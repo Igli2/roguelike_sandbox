@@ -5,12 +5,16 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.World;
 
 public abstract class Entity {
 
     public static final double GROUND_FRICTION = 0.7D;
     public static final int SPRITE_SIZE = 50;
     private final SpriteBatch batch;
+    private final World world;
     private final int level;
     private final int vitality;
     private final int constitution;
@@ -18,8 +22,10 @@ public abstract class Entity {
     private final int dexterity;
     private final int intelligence;
     private final int luck;
-    private final double stamina;
     protected Vector2 position;
+    //physics
+    Body body;
+    private double stamina;
     private Sprite sprite;
     private Texture texture;
     private Vector2 velocity;
@@ -36,7 +42,7 @@ public abstract class Entity {
     private double magicResistance;
     private double movementSpeed;
 
-    public Entity(SpriteBatch batch, Vector2 position, int level, int vitality, int constitution, int strength, int dexterity, int intelligence, int luck, EntityTexture texture) {
+    public Entity(SpriteBatch batch, World world, Vector2 position, int level, int vitality, int constitution, int strength, int dexterity, int intelligence, int luck, EntityTexture texture) {
         this.velocity = new Vector2(0, 0);
         this.position = position;
         this.level = level;
@@ -47,16 +53,13 @@ public abstract class Entity {
         this.intelligence = intelligence;
         this.luck = luck;
 
+        this.world = world;
         this.batch = batch;
 
-        setTexture(texture);
-        calculateStats();
-
-        health = maxHealth;
-        stamina = maxStamina;
+        initialise(texture);
     }
 
-    public Entity(SpriteBatch batch, Vector2 position, EntityTexture texture) {//test only
+    public Entity(SpriteBatch batch, World world, Vector2 position, EntityTexture texture) {//test only
         this.velocity = new Vector2(0, 0);
         this.position = position;
         this.level = 2;
@@ -67,19 +70,27 @@ public abstract class Entity {
         this.intelligence = 2;
         this.luck = 2;
 
+        this.world = world;
         this.batch = batch;
+
+        initialise(texture);
+    }
+
+    private void initialise(EntityTexture texture) {
 
         setTexture(texture);
         calculateStats();
 
         health = maxHealth;
         stamina = maxStamina;
+        BodyDef bd = new BodyDef();
+        bd.type = BodyDef.BodyType.DynamicBody;
+        body = world.createBody(bd);
     }
 
     public abstract void run();
 
     public abstract void kill();
-
 
     private void setTexture(EntityTexture texture) {
         this.texture = new Texture(Gdx.files.internal(texture.texture));
@@ -190,8 +201,8 @@ public abstract class Entity {
     }
 
     private void setPosition(Vector2 newPosition) {
-        position = newPosition;
-        sprite.setPosition(position.x, position.y);
+        //position = newPosition;
+        //sprite.setPosition(position.x, position.y);
     }
 
     public void addForce(Vector2 direction) {
@@ -200,6 +211,8 @@ public abstract class Entity {
         if (velocity.len() > movementSpeed / 20f) {
             velocity.setLength((float) movementSpeed);
         }
+        body.applyForceToCenter(direction, true);
+        position = body.getPosition();
     }
 
     public void move() {
@@ -209,5 +222,9 @@ public abstract class Entity {
 
     public void render() {
         sprite.draw(batch);
+    }
+
+    public void removeBody() {
+        world.destroyBody(body);
     }
 }

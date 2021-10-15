@@ -11,7 +11,7 @@ public abstract class Player extends Entity {
     int experienceNeeded;
 
     public Player(SpriteBatch batch, RoguelikeWorld world, Vector2 position, int level, int vitality, int constitution, int strength, int dexterity, int intelligence, int luck, EntityTexture texture) {
-        super(batch, position, level, vitality, constitution, strength, dexterity, intelligence, luck, texture);
+        super(batch, world.getBox2DWorld(), position, level, vitality, constitution, strength, dexterity, intelligence, luck, texture);
         experience = 0;
         this.world = world;
     }

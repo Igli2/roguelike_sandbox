@@ -5,7 +5,9 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
-import com.badlogic.gdx.maps.tiled.*;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -44,9 +46,12 @@ public class RoguelikeWorld {
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
     }
 
-    public void setCameraPos(Vector2 newPosition) {
-        camera.position.x = newPosition.x;
-        camera.position.y = newPosition.y;
+    private static PolygonShape createPolygon(RectangleMapObject rectangleObject) {
+        Rectangle rectangle = rectangleObject.getRectangle();
+        PolygonShape polygon = new PolygonShape();
+        Vector2 size = new Vector2((rectangle.x + rectangle.width * 0.5f) / RoguelikeWorld.TILE_SIZE, (rectangle.y + rectangle.height * 0.5f) / RoguelikeWorld.TILE_SIZE);
+        polygon.setAsBox(rectangle.width * 0.5f / RoguelikeWorld.TILE_SIZE, rectangle.height * 0.5f / RoguelikeWorld.TILE_SIZE, size, 0.0f);
+        return polygon;
     }
 
     /* public void generateTileMap() {
@@ -79,6 +84,11 @@ public class RoguelikeWorld {
         return ImprovedNoise.noise((float) x / 20, (float) y / 20, seed / 10);
     } */
 
+    public void setCameraPos(Vector2 newPosition) {
+        camera.position.x = newPosition.x;
+        camera.position.y = newPosition.y;
+    }
+
     public void render() {
         camera.update();
         tiledMapRenderer.setView(camera);
@@ -105,15 +115,11 @@ public class RoguelikeWorld {
         }
     }
 
-    private static PolygonShape createPolygon(RectangleMapObject rectangleObject) {
-        Rectangle rectangle = rectangleObject.getRectangle();
-        PolygonShape polygon = new PolygonShape();
-        Vector2 size = new Vector2((rectangle.x + rectangle.width * 0.5f) / RoguelikeWorld.TILE_SIZE, (rectangle.y + rectangle.height * 0.5f) / RoguelikeWorld.TILE_SIZE);
-        polygon.setAsBox(rectangle.width * 0.5f / RoguelikeWorld.TILE_SIZE, rectangle.height * 0.5f / RoguelikeWorld.TILE_SIZE, size, 0.0f);
-        return polygon;
-    }
-
     public void dispose() {
         tiledMap.dispose();
+    }
+
+    public World getBox2DWorld() {
+        return box2DWorld;
     }
 }
