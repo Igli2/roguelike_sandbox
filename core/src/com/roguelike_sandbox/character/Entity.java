@@ -1,13 +1,10 @@
 package com.roguelike_sandbox.character;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 
 public abstract class Entity {
 
@@ -27,7 +24,6 @@ public abstract class Entity {
     Body body;
     private double stamina;
     private Sprite sprite;
-    private Texture texture;
     private Vector2 velocity;
     private double health;
     private double maxHealth;
@@ -42,7 +38,7 @@ public abstract class Entity {
     private double magicResistance;
     private double movementSpeed;
 
-    public Entity(SpriteBatch batch, World world, Vector2 position, int level, int vitality, int constitution, int strength, int dexterity, int intelligence, int luck, EntityTexture texture) {
+    public Entity(SpriteBatch batch, TextureAtlas textureAtlas, World world, Vector2 position, int level, int vitality, int constitution, int strength, int dexterity, int intelligence, int luck, EntityTexture texture) {
         this.velocity = new Vector2(0, 0);
         this.position = position;
         this.level = level;
@@ -56,10 +52,10 @@ public abstract class Entity {
         this.world = world;
         this.batch = batch;
 
-        initialise(texture);
+        initialise(textureAtlas, texture);
     }
 
-    public Entity(SpriteBatch batch, World world, Vector2 position, EntityTexture texture) {//test only
+    public Entity(SpriteBatch batch, TextureAtlas textureAtlas, World world, Vector2 position, EntityTexture texture) {//test only
         this.velocity = new Vector2(0, 0);
         this.position = position;
         this.level = 2;
@@ -73,31 +69,36 @@ public abstract class Entity {
         this.world = world;
         this.batch = batch;
 
-        initialise(texture);
+        initialise(textureAtlas, texture);
     }
 
-    private void initialise(EntityTexture texture) {
-
-        setTexture(texture);
+    private void initialise(TextureAtlas textureAtlas, EntityTexture texture) {
         calculateStats();
 
+        sprite = textureAtlas.createSprite(texture.texture);
         health = maxHealth;
         stamina = maxStamina;
+
         BodyDef bd = new BodyDef();
+        bd.fixedRotation = true;
         bd.type = BodyDef.BodyType.DynamicBody;
+
         body = world.createBody(bd);
+
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(sprite.getWidth(), sprite.getHeight());
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 1f;
+
+        body.createFixture(fixtureDef);
+        shape.dispose();
     }
 
     public abstract void run();
 
     public abstract void kill();
-
-    private void setTexture(EntityTexture texture) {
-        this.texture = new Texture(Gdx.files.internal(texture.texture));
-        sprite = new Sprite(this.texture, SPRITE_SIZE, SPRITE_SIZE);
-        sprite.setPosition(23, 23);
-        // sprite.draw(batch);
-    }
 
     private void calculateStats() {
 
@@ -206,25 +207,30 @@ public abstract class Entity {
     }
 
     public void addForce(Vector2 direction) {
-        direction.setLength((float) (movementSpeed / 10f));
+        direction.setLength((float) (movementSpeed / 0.01f));
         velocity = velocity.add(direction);
         if (velocity.len() > movementSpeed / 20f) {
             velocity.setLength((float) movementSpeed);
         }
-        body.applyForceToCenter(direction, true);
-        position = body.getPosition();
     }
 
     public void move() {
-        setPosition(position.add(velocity));
-        velocity.setLength((float) (velocity.len() * GROUND_FRICTION));
+        body.setLinearVelocity(velocity);
+        position = body.getPosition();
+        sprite.setPosition((body.getPosition().x) - sprite.
+                        getWidth() / 2,
+                (body.getPosition().y) - sprite.getHeight() / 2);
+        velocity = velocity.setLength((float) (velocity.len() * GROUND_FRICTION));
     }
 
     public void render() {
-        sprite.draw(batch);
+        batch.draw(sprite, sprite.getX(), sprite.getY(), sprite.getOriginX(),
+                sprite.getOriginY(),
+                sprite.getWidth(), sprite.getHeight(), sprite.getScaleX(), sprite.
+                        getScaleY(), sprite.getRotation());
     }
 
-    public void removeBody() {
+    public void remove() {
         world.destroyBody(body);
     }
 }

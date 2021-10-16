@@ -16,6 +16,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
 public class RoguelikeWorld {
 
@@ -27,6 +28,7 @@ public class RoguelikeWorld {
     private final TiledMap tiledMap;
     private final TiledMapRenderer tiledMapRenderer;
     private final World box2DWorld;
+    private final ExtendViewport viewport;
     private Array<Body> bodies;
 
     public RoguelikeWorld() {
@@ -36,6 +38,7 @@ public class RoguelikeWorld {
         // seed = new Random().nextInt(Integer.MAX_VALUE);
 
         camera = new OrthographicCamera();
+        viewport = new ExtendViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera);
         camera.zoom -= 0.5f;
         camera.setToOrtho(false, w, h);
         camera.update();
@@ -90,6 +93,7 @@ public class RoguelikeWorld {
     }
 
     public void render() {
+        //box2DWorld.step(1f / 60f, 6, 2);
         camera.update();
         tiledMapRenderer.setView(camera);
         tiledMapRenderer.render();

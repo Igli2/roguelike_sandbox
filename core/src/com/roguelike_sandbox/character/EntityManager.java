@@ -1,6 +1,7 @@
 package com.roguelike_sandbox.character;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.roguelike_sandbox.character.classes.Wizard;
 import com.roguelike_sandbox.world.RoguelikeWorld;
@@ -9,12 +10,13 @@ import java.util.ArrayList;
 
 public class EntityManager {
 
-    Player player;
-
+    private final Player player;
+    private final TextureAtlas textureAtlas;
     ArrayList<Entity> entities = new ArrayList<>();
 
     public EntityManager(SpriteBatch batch, RoguelikeWorld world) {
-        player = new Wizard(batch, world, new Vector2(1000, 1000), 1);
+        textureAtlas = new TextureAtlas("images/textureatlas/charactertest.txt");
+        player = new Wizard(batch, textureAtlas, world, new Vector2(1000, 1000), 1);
         addEntity(player);
     }
 
@@ -48,6 +50,13 @@ public class EntityManager {
         for (Entity all : entities) {
             all.render();
         }
+    }
+
+    public void removeAll() {
+        for (Entity e : entities) {
+            e.remove();
+        }
+        entities = new ArrayList<>();
     }
 
     public Player getPlayer() {

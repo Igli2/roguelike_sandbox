@@ -2,8 +2,7 @@ package com.roguelike_sandbox.character;
 
 public enum EntityTexture {
 
-    PLAYER("images/character/rogue like attack.png"),
-    WIZARD("images/character/rogue like attack.png");
+    WIZARD("character");
 
     public final String texture;
 

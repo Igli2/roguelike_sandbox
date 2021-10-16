@@ -39,6 +39,7 @@ public class RoguelikeSandbox extends ApplicationAdapter {
 
     @Override
     public void dispose() {
+        //TODO: dispose all disposable objects
         batch.dispose();
         world.dispose();
     }
