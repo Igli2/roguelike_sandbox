@@ -37,7 +37,7 @@ public class RoguelikeSandbox extends ApplicationAdapter {
         ScreenUtils.clear(0, 0, 0, 1);
         // keyboard input
         listener.run(entityManager.getPlayer());
-        world.render();
+        world.render(entityManager.getPlayer());
         entityManager.runEntities();
         entityManager.renderEntities();
         batch.end();

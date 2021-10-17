@@ -11,15 +11,13 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.roguelike_sandbox.audio.MusicEffect;
 import com.roguelike_sandbox.audio.MusicPlayer;
 import com.roguelike_sandbox.character.CollisionDetection;
+import com.roguelike_sandbox.character.Player;
 import com.roguelike_sandbox.game.GameSettings;
 
 public class RoguelikeWorld {
@@ -56,17 +54,17 @@ public class RoguelikeWorld {
 
         box2DWorld = new World(new Vector2(0, 0), true);
         tiledMap = new TmxMapLoader().load("tilemaps/lobby.tmx");
-        createBodies();
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
         box2DWorld.setContactListener(new CollisionDetection());
+        createBodies();
     }
 
     private static PolygonShape createPolygon(RectangleMapObject rectangleObject) {
         Rectangle rectangle = rectangleObject.getRectangle();
         PolygonShape polygon = new PolygonShape();
-        Vector2 size = new Vector2((rectangle.x + rectangle.width * 0.5f) / RoguelikeWorld.TILE_SIZE, (rectangle.y + rectangle.height * 0.5f) / RoguelikeWorld.TILE_SIZE);
-        polygon.setAsBox(rectangle.width * 0.5f / RoguelikeWorld.TILE_SIZE, rectangle.height * 0.5f / RoguelikeWorld.TILE_SIZE, size, 0.0f);
+        Vector2 size = new Vector2(rectangle.width, rectangle.height);
+        polygon.setAsBox(size.x / 2f, size.y / 2f, new Vector2(rectangle.x + size.x / 2, rectangle.y + size.y / 2), 0.0f);
         return polygon;
     }
 
@@ -109,13 +107,23 @@ public class RoguelikeWorld {
         camera.position.y = newPosition.y;
     }
 
-    public void render() {
-        //box2DWorld.step(1f / 60f, 6, 2);
+    public void render(Player player) {
         musicPlayer.loopInSegments();
-        box2DWorld.step(1f / 120f, 6, 2);
         camera.update();
         tiledMapRenderer.setView(camera);
         tiledMapRenderer.render();
+
+
+        //TODO: remove debug
+        debug();
+
+
+        box2DWorld.step(1f / 120f, 6, 2);
+    }
+
+    private void debug() {
+        Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
+        debugRenderer.render(box2DWorld, camera.combined);
     }
 
     public void createBodies() {
@@ -130,9 +138,9 @@ public class RoguelikeWorld {
 
                 BodyDef bd = new BodyDef();
                 bd.type = BodyDef.BodyType.StaticBody;
+                //bd.position = new Vector2(rectObj.getRectangle().x, rectObj.getRectangle().getY());
                 Body body = box2DWorld.createBody(bd);
-                body.createFixture(shape, 1);
-
+                body.createFixture(shape, 0f);
                 bodies.add(body);
             }
         }
