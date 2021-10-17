@@ -9,17 +9,23 @@ import com.roguelike_sandbox.world.RoguelikeWorld;
 
 public class RoguelikeSandbox extends ApplicationAdapter {
 
-    SpriteBatch batch;
-    RoguelikeWorld world;
-    InputListener listener;
-    EntityManager entityManager;
+    private static SpriteBatch batch;
+    private static RoguelikeWorld world;
+    private static InputListener listener;
+    private static EntityManager entityManager;
+    private static GameSettings settings;
+
+    public static GameSettings getSettings() {
+        return settings;
+    }
 
     @Override
     public void create() {
         batch = new SpriteBatch();
 
         listener = new InputListener();
-        world = new RoguelikeWorld();
+        settings = new GameSettings(1f, 1f);
+        world = new RoguelikeWorld(settings);
         // world.generateTileMap();
 
         entityManager = new EntityManager(batch, world);

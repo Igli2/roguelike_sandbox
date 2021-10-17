@@ -17,6 +17,10 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.roguelike_sandbox.audio.MusicEffect;
+import com.roguelike_sandbox.audio.MusicPlayer;
+import com.roguelike_sandbox.character.CollisionDetection;
+import com.roguelike_sandbox.game.GameSettings;
 
 public class RoguelikeWorld {
 
@@ -29,9 +33,16 @@ public class RoguelikeWorld {
     private final TiledMapRenderer tiledMapRenderer;
     private final World box2DWorld;
     private final ExtendViewport viewport;
+    private final GameSettings settings;
+    private MusicPlayer musicPlayer;
     private Array<Body> bodies;
 
-    public RoguelikeWorld() {
+    public RoguelikeWorld(GameSettings settings) {
+        this.settings = settings;
+
+        //TODO: Create music system
+        musicPlayer = new MusicPlayer(MusicEffect.WATER_THEME, settings.getMusicVolume(), true);
+
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
 
@@ -39,7 +50,7 @@ public class RoguelikeWorld {
 
         camera = new OrthographicCamera();
         viewport = new ExtendViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera);
-        camera.zoom -= 0.5f;
+        camera.zoom -= 0.8f;
         camera.setToOrtho(false, w, h);
         camera.update();
 
@@ -47,6 +58,8 @@ public class RoguelikeWorld {
         tiledMap = new TmxMapLoader().load("tilemaps/lobby.tmx");
         createBodies();
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+
+        box2DWorld.setContactListener(new CollisionDetection());
     }
 
     private static PolygonShape createPolygon(RectangleMapObject rectangleObject) {
@@ -55,6 +68,10 @@ public class RoguelikeWorld {
         Vector2 size = new Vector2((rectangle.x + rectangle.width * 0.5f) / RoguelikeWorld.TILE_SIZE, (rectangle.y + rectangle.height * 0.5f) / RoguelikeWorld.TILE_SIZE);
         polygon.setAsBox(rectangle.width * 0.5f / RoguelikeWorld.TILE_SIZE, rectangle.height * 0.5f / RoguelikeWorld.TILE_SIZE, size, 0.0f);
         return polygon;
+    }
+
+    public void setMusicPlayer(MusicPlayer musicPlayer) {
+        this.musicPlayer = musicPlayer;
     }
 
     /* public void generateTileMap() {
@@ -94,6 +111,8 @@ public class RoguelikeWorld {
 
     public void render() {
         //box2DWorld.step(1f / 60f, 6, 2);
+        musicPlayer.loopInSegments();
+        box2DWorld.step(1f / 120f, 6, 2);
         camera.update();
         tiledMapRenderer.setView(camera);
         tiledMapRenderer.render();

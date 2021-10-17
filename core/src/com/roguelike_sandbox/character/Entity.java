@@ -19,11 +19,11 @@ public abstract class Entity {
     private final int dexterity;
     private final int intelligence;
     private final int luck;
-    protected Vector2 position;
+    protected Sprite sprite;
     //physics
     Body body;
+    private Vector2 acceleration;
     private double stamina;
-    private Sprite sprite;
     private Vector2 velocity;
     private double health;
     private double maxHealth;
@@ -40,7 +40,6 @@ public abstract class Entity {
 
     public Entity(SpriteBatch batch, TextureAtlas textureAtlas, World world, Vector2 position, int level, int vitality, int constitution, int strength, int dexterity, int intelligence, int luck, EntityTexture texture) {
         this.velocity = new Vector2(0, 0);
-        this.position = position;
         this.level = level;
         this.vitality = vitality;
         this.constitution = constitution;
@@ -57,7 +56,6 @@ public abstract class Entity {
 
     public Entity(SpriteBatch batch, TextureAtlas textureAtlas, World world, Vector2 position, EntityTexture texture) {//test only
         this.velocity = new Vector2(0, 0);
-        this.position = position;
         this.level = 2;
         this.vitality = 2;
         this.constitution = 2;
@@ -81,7 +79,7 @@ public abstract class Entity {
 
         BodyDef bd = new BodyDef();
         bd.fixedRotation = true;
-        bd.type = BodyDef.BodyType.DynamicBody;
+        bd.type = BodyDef.BodyType.KinematicBody;
 
         body = world.createBody(bd);
 
@@ -92,8 +90,12 @@ public abstract class Entity {
         fixtureDef.shape = shape;
         fixtureDef.density = 1f;
 
+        body.setActive(true);
+        body.setAwake(true);
         body.createFixture(fixtureDef);
         shape.dispose();
+
+        acceleration = new Vector2(0,0);
     }
 
     public abstract void run();
@@ -201,26 +203,30 @@ public abstract class Entity {
         damage(damager, (100D / (100D + magicResistance)) * damager.getMagicDamage());
     }
 
-    private void setPosition(Vector2 newPosition) {
-        //position = newPosition;
-        //sprite.setPosition(position.x, position.y);
-    }
-
     public void addForce(Vector2 direction) {
-        direction.setLength((float) (movementSpeed / 0.01f));
-        velocity = velocity.add(direction);
-        if (velocity.len() > movementSpeed / 20f) {
-            velocity.setLength((float) movementSpeed);
-        }
+        direction.setLength((float) movementSpeed * 2);
+        acceleration = acceleration.add(direction);
     }
 
     public void move() {
+        accelerate();
+
         body.setLinearVelocity(velocity);
-        position = body.getPosition();
         sprite.setPosition((body.getPosition().x) - sprite.
                         getWidth() / 2,
                 (body.getPosition().y) - sprite.getHeight() / 2);
-        velocity = velocity.setLength((float) (velocity.len() * GROUND_FRICTION));
+    }
+
+    private void accelerate() {
+        if (acceleration.len() == 0) {
+            velocity = velocity.setLength((float) (velocity.len() * GROUND_FRICTION));
+        } else {
+            velocity = velocity.add(acceleration);
+            if (velocity.len() > movementSpeed * 20) {
+                velocity.setLength((float) movementSpeed * 20);
+            }
+        }
+        acceleration = new Vector2(0,0);
     }
 
     public void render() {
@@ -232,5 +238,9 @@ public abstract class Entity {
 
     public void remove() {
         world.destroyBody(body);
+    }
+
+    public Vector2 getPosition() {
+        return body.getPosition();
     }
 }

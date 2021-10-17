@@ -19,7 +19,7 @@ public abstract class Player extends Entity {
 
     @Override
     public void run() {
-        world.setCameraPos(body.getPosition());
+        world.setCameraPos(new Vector2(sprite.getX(), sprite.getY()));
         move();
     }
 
