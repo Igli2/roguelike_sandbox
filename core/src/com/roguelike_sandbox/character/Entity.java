@@ -7,12 +7,11 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.roguelike_sandbox.behaviour.Behaviour;
 
-public abstract class Entity {
+public abstract class Entity extends Sprite {
 
     public static final float GROUND_FRICTION = 0.7F;
     public static final int SPRITE_SIZE = 50;
     protected final Behaviour.BEHAVIOUR_TYPE behaviour;
-    private final World world;
     private final int level;
     private final int vitality;
     private final int constitution;
@@ -20,10 +19,11 @@ public abstract class Entity {
     private final int dexterity;
     private final int intelligence;
     private final int luck;
+    public World world;
+    public Body body;
     protected Sprite sprite;
     protected double movementSpeed;
     //physics
-    Body body;
     private Vector2 acceleration;
     private double stamina;
     private Vector2 velocity;
@@ -51,7 +51,7 @@ public abstract class Entity {
 
         this.world = world;
 
-        initialise(textureAtlas, texture);
+        initialise(textureAtlas, texture, position);
     }
 
     public Entity(TextureAtlas textureAtlas, World world, Vector2 position, Behaviour.BEHAVIOUR_TYPE behaviour, EntityTexture texture) {//test only
@@ -67,29 +67,28 @@ public abstract class Entity {
 
         this.world = world;
 
-        initialise(textureAtlas, texture);
+        initialise(textureAtlas, texture, position);
     }
 
-    private void initialise(TextureAtlas textureAtlas, EntityTexture texture) {
+    private void initialise(TextureAtlas textureAtlas, EntityTexture texture, Vector2 position) {
         calculateStats();
 
         sprite = textureAtlas.createSprite(texture.texture);
         health = maxHealth;
         stamina = maxStamina;
 
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(sprite.getWidth(), sprite.getHeight());
 
         BodyDef bd = new BodyDef();
         bd.fixedRotation = true;
-        bd.type = BodyDef.BodyType.KinematicBody;
+        bd.type = BodyDef.BodyType.DynamicBody;
+        bd.position.set(position);
 
         body = world.createBody(bd);
 
         FixtureDef fixtureDef = new FixtureDef();
+        CircleShape shape = new CircleShape();
+        shape.setRadius(sprite.getWidth());
         fixtureDef.shape = shape;
-        fixtureDef.density = 1f;
-        fixtureDef.isSensor = true;
 
         body.setActive(true);
         body.setAwake(true);

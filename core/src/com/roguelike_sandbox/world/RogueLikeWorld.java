@@ -106,12 +106,10 @@ public class RogueLikeWorld {
     public void render(float dt) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        Box2DDebugRenderer b2d = new Box2DDebugRenderer();
-        //TODO: remove debug
-        debug();
         tiledMapRenderer.render();
         entityManager.render();
-        b2d.render(box2DWorld, camera.combined);
+        //TODO: remove debug
+        debug();
         box2DWorld.step(1f / 60f, 6, 2);
     }
 
@@ -127,14 +125,13 @@ public class RogueLikeWorld {
         for (MapObject obj : objects) {
             if (obj instanceof RectangleMapObject) {
                 RectangleMapObject rectObj = (RectangleMapObject) obj;
-                // rectObj.getRectangle()
-                PolygonShape shape = RogueLikeWorld.createPolygon(rectObj);
 
                 BodyDef bd = new BodyDef();
                 bd.type = BodyDef.BodyType.StaticBody;
-                //bd.position = new Vector2(rectObj.getRectangle().x, rectObj.getRectangle().getY());
                 Body body = box2DWorld.createBody(bd);
-                body.createFixture(shape, 0f);
+                FixtureDef fixture = new FixtureDef();
+                fixture.shape = RogueLikeWorld.createPolygon(rectObj);
+                body.createFixture(fixture);
                 bodies.add(body);
             }
         }
