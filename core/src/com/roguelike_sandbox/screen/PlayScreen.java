@@ -1,28 +1,20 @@
 package com.roguelike_sandbox.screen;
 
-import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
-import com.roguelike_sandbox.game.RoguelikeSandbox;
+import com.roguelike_sandbox.game.GameClass;
 import com.roguelike_sandbox.scenes.Hud;
+import com.roguelike_sandbox.world.RogueLikeWorld;
 
 public class PlayScreen implements Screen {
 
-    private Hud hud;
-    private RoguelikeSandbox game;
-    private OrthographicCamera gameCam;
-    private Viewport gamePort;
+    private final Hud hud;
+    private final GameClass game;
+    private final RogueLikeWorld world;
 
-    public PlayScreen(RoguelikeSandbox game) {
-        hud = new Hud(null);
+    public PlayScreen(GameClass game, RogueLikeWorld world) {
+        hud = new Hud(game.batch);
         this.game = game;
-        gameCam = new OrthographicCamera();
-        gamePort = new FitViewport(RoguelikeSandbox.V_WIDTH, RoguelikeSandbox.V_HEIGHT, gameCam);
+        this.world = world;
     }
 
     @Override
@@ -32,18 +24,15 @@ public class PlayScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(1, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        ScreenUtils.clear(0, 0, 0, 1);
-        game.batch.setProjectionMatrix(gameCam.combined);
+        world.update(delta);
         game.batch.begin();
-
+        world.render(delta);
         game.batch.end();
     }
 
     @Override
     public void resize(int width, int height) {
-        gamePort.update(width, height);
+        world.resizeViewport(width, height);
     }
 
     @Override
@@ -63,6 +52,6 @@ public class PlayScreen implements Screen {
 
     @Override
     public void dispose() {
-
+        world.dispose();
     }
 }

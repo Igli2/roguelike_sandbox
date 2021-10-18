@@ -2,7 +2,7 @@ package com.roguelike_sandbox.game.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.roguelike_sandbox.game.RoguelikeSandbox;
+import com.roguelike_sandbox.game.GameClass;
 
 import java.awt.*;
 
@@ -15,6 +15,6 @@ public class DesktopLauncher {
         config.title = "Roguelike Sandbox";
         config.forceExit = true;
 
-        new LwjglApplication(new RoguelikeSandbox(), config);
+        new LwjglApplication(new GameClass(), config);
     }
 }

@@ -5,12 +5,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.roguelike_sandbox.behaviour.Behaviour;
 
 public abstract class Entity {
 
-    public static final double GROUND_FRICTION = 0.7D;
+    public static final float GROUND_FRICTION = 0.7F;
     public static final int SPRITE_SIZE = 50;
-    private final SpriteBatch batch;
+    protected final Behaviour.BEHAVIOUR_TYPE behaviour;
     private final World world;
     private final int level;
     private final int vitality;
@@ -20,6 +21,7 @@ public abstract class Entity {
     private final int intelligence;
     private final int luck;
     protected Sprite sprite;
+    protected double movementSpeed;
     //physics
     Body body;
     private Vector2 acceleration;
@@ -31,14 +33,13 @@ public abstract class Entity {
     private double dodgeChance;
     private double critChance;
     private double charisma;
-
     private double physicDamage;
     private double magicDamage;
     private double physicResistance;
     private double magicResistance;
-    protected double movementSpeed;
 
-    public Entity(SpriteBatch batch, TextureAtlas textureAtlas, World world, Vector2 position, int level, int vitality, int constitution, int strength, int dexterity, int intelligence, int luck, EntityTexture texture) {
+    public Entity(TextureAtlas textureAtlas, World world, Vector2 position, Behaviour.BEHAVIOUR_TYPE behaviour, int level, int vitality, int constitution, int strength, int dexterity, int intelligence, int luck, EntityTexture texture) {
+        this.behaviour = behaviour;
         this.velocity = new Vector2(0, 0);
         this.level = level;
         this.vitality = vitality;
@@ -49,12 +50,12 @@ public abstract class Entity {
         this.luck = luck;
 
         this.world = world;
-        this.batch = batch;
 
         initialise(textureAtlas, texture);
     }
 
-    public Entity(SpriteBatch batch, TextureAtlas textureAtlas, World world, Vector2 position, EntityTexture texture) {//test only
+    public Entity(TextureAtlas textureAtlas, World world, Vector2 position, Behaviour.BEHAVIOUR_TYPE behaviour, EntityTexture texture) {//test only
+        this.behaviour = behaviour;
         this.velocity = new Vector2(0, 0);
         this.level = 2;
         this.vitality = 2;
@@ -65,7 +66,6 @@ public abstract class Entity {
         this.luck = 2;
 
         this.world = world;
-        this.batch = batch;
 
         initialise(textureAtlas, texture);
     }
@@ -99,7 +99,10 @@ public abstract class Entity {
         acceleration = new Vector2(0, 0);
     }
 
-    public abstract void run();
+    public void update(float dt) {
+        behaviour.AI.update(this, dt);
+        move();
+    }
 
     public abstract void kill();
 
@@ -211,7 +214,6 @@ public abstract class Entity {
 
     public void move() {
         accelerate();
-
         body.setLinearVelocity(velocity);
 
         sprite.setPosition((body.getPosition().x) - sprite.
@@ -220,18 +222,15 @@ public abstract class Entity {
     }
 
     private void accelerate() {
-        if (acceleration.len() == 0) {
-            velocity = velocity.setLength((float) (velocity.len() * GROUND_FRICTION));
-        } else {
-            velocity = velocity.add(acceleration);
-            if (velocity.len() > movementSpeed * 20) {
-                velocity.setLength((float) movementSpeed * 20);
-            }
+        velocity.setLength(velocity.len() * GROUND_FRICTION);
+        velocity = velocity.add(acceleration);
+        if (velocity.len() > movementSpeed * 20) {
+            velocity.setLength((float) movementSpeed * 20);
         }
         acceleration = new Vector2(0, 0);
     }
 
-    public void render() {
+    public void draw(SpriteBatch batch) {
         batch.draw(sprite, sprite.getX(), sprite.getY(), sprite.getOriginX(),
                 sprite.getOriginY(),
                 sprite.getWidth(), sprite.getHeight(), sprite.getScaleX(), sprite.
@@ -246,12 +245,12 @@ public abstract class Entity {
         return body.getPosition();
     }
 
-    public void setVelocity(Vector2 velocity) {
-        this.velocity = velocity;
-    }
-
     public Vector2 getVelocity() {
         return velocity;
+    }
+
+    public void setVelocity(Vector2 velocity) {
+        this.velocity = velocity;
     }
 
     public Fixture getFixture() {

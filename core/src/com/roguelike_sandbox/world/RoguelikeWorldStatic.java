@@ -2,14 +2,15 @@ package com.roguelike_sandbox.world;
 
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.roguelike_sandbox.game.GameSettings;
+import com.roguelike_sandbox.game.GameClass;
 
-public class RoguelikeWorldStatic extends RoguelikeWorldBase {
-    public RoguelikeWorldStatic(GameSettings settings, String tilemapFile) {
-        super(settings);
+public class RoguelikeWorldStatic extends RogueLikeWorld {
+    public RoguelikeWorldStatic(GameClass game, String tilemapFile) {
+        super(game);
 
         tiledMap = new TmxMapLoader().load("tilemaps/lobby.tmx");
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+        setCameraPositions();
         createBodies();
     }
 }

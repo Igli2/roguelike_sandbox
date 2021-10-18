@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.roguelike_sandbox.game.RoguelikeSandbox;
+import com.roguelike_sandbox.game.GameClass;
 
 import java.awt.*;
 
@@ -19,7 +19,7 @@ public class Hud {
     private Label level;
 
     public Hud(SpriteBatch batch) {
-        viewport = new FitViewport(RoguelikeSandbox.V_WIDTH, RoguelikeSandbox.V_HEIGHT, new OrthographicCamera());
+        viewport = new FitViewport(GameClass.V_WIDTH, GameClass.V_HEIGHT, new OrthographicCamera());
         stage = new Stage(viewport, batch);
 
         Table table = new Table();
