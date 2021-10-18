@@ -7,8 +7,6 @@ import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -16,7 +14,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.roguelike_sandbox.audio.MusicEffect;
 import com.roguelike_sandbox.audio.MusicPlayer;
-import com.roguelike_sandbox.character.CollisionDetection;
 import com.roguelike_sandbox.character.Player;
 import com.roguelike_sandbox.game.GameSettings;
 
@@ -49,7 +46,6 @@ public class RoguelikeWorldBase {
         camera.update();
 
         box2DWorld = new World(new Vector2(0, 0), true);
-        box2DWorld.setContactListener(new CollisionDetection());
     }
 
     private static PolygonShape createPolygon(RectangleMapObject rectangleObject) {

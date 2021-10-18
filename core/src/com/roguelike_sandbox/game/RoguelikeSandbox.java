@@ -1,22 +1,25 @@
 package com.roguelike_sandbox.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.roguelike_sandbox.character.EntityManager;
 import com.roguelike_sandbox.input.InputListener;
+import com.roguelike_sandbox.screen.PlayScreen;
 import com.roguelike_sandbox.world.RoguelikeWorldBase;
 import com.roguelike_sandbox.world.RoguelikeWorldGenerated;
 import com.roguelike_sandbox.world.RoguelikeWorldStatic;
 
-public class RoguelikeSandbox extends ApplicationAdapter {
+public class RoguelikeSandbox extends Game {
 
-    private static SpriteBatch batch;
-    private static RoguelikeWorldStatic lobbyWorld;
-    private static RoguelikeWorldGenerated generatedWorld;
+    public static final int V_WIDTH = 1080, V_HEIGHT = 720;
+    public SpriteBatch batch;
     private static InputListener listener;
     private static EntityManager entityManager;
     private static GameSettings settings;
+    private static RoguelikeWorldStatic lobbyWorld;
+    private static RoguelikeWorldGenerated generatedWorld;
 
     public static GameSettings getSettings() {
         return settings;
@@ -25,6 +28,7 @@ public class RoguelikeSandbox extends ApplicationAdapter {
     @Override
     public void create() {
         batch = new SpriteBatch();
+        setScreen(new PlayScreen(this));
 
         listener = new InputListener();
         settings = new GameSettings(1f, 1f);
@@ -36,8 +40,9 @@ public class RoguelikeSandbox extends ApplicationAdapter {
 
     @Override
     public void render() {
+        super.render();
+
         batch.begin();
-        ScreenUtils.clear(0, 0, 0, 1);
 
         // keyboard input
         listener.run(entityManager.getPlayer());
@@ -54,7 +59,5 @@ public class RoguelikeSandbox extends ApplicationAdapter {
     public void dispose() {
         //TODO: dispose all disposable objects
         batch.dispose();
-        lobbyWorld.dispose();
-        generatedWorld.dispose();
     }
 }

@@ -36,7 +36,7 @@ public abstract class Entity {
     private double magicDamage;
     private double physicResistance;
     private double magicResistance;
-    private double movementSpeed;
+    protected double movementSpeed;
 
     public Entity(SpriteBatch batch, TextureAtlas textureAtlas, World world, Vector2 position, int level, int vitality, int constitution, int strength, int dexterity, int intelligence, int luck, EntityTexture texture) {
         this.velocity = new Vector2(0, 0);
@@ -77,25 +77,26 @@ public abstract class Entity {
         health = maxHealth;
         stamina = maxStamina;
 
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(sprite.getWidth(), sprite.getHeight());
+
         BodyDef bd = new BodyDef();
         bd.fixedRotation = true;
         bd.type = BodyDef.BodyType.KinematicBody;
 
         body = world.createBody(bd);
 
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(sprite.getWidth(), sprite.getHeight());
-
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 1f;
+        fixtureDef.isSensor = true;
 
         body.setActive(true);
         body.setAwake(true);
         body.createFixture(fixtureDef);
         shape.dispose();
 
-        acceleration = new Vector2(0,0);
+        acceleration = new Vector2(0, 0);
     }
 
     public abstract void run();
@@ -212,6 +213,7 @@ public abstract class Entity {
         accelerate();
 
         body.setLinearVelocity(velocity);
+
         sprite.setPosition((body.getPosition().x) - sprite.
                         getWidth() / 2,
                 (body.getPosition().y) - sprite.getHeight() / 2);
@@ -226,7 +228,7 @@ public abstract class Entity {
                 velocity.setLength((float) movementSpeed * 20);
             }
         }
-        acceleration = new Vector2(0,0);
+        acceleration = new Vector2(0, 0);
     }
 
     public void render() {
@@ -242,5 +244,17 @@ public abstract class Entity {
 
     public Vector2 getPosition() {
         return body.getPosition();
+    }
+
+    public void setVelocity(Vector2 velocity) {
+        this.velocity = velocity;
+    }
+
+    public Vector2 getVelocity() {
+        return velocity;
+    }
+
+    public Fixture getFixture() {
+        return body.getFixtureList().first();
     }
 }
