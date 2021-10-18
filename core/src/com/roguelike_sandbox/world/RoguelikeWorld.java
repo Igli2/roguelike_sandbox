@@ -36,6 +36,13 @@ public class RoguelikeWorld {
     private Array<Body> bodies;
 
     public RoguelikeWorld(GameSettings settings) {
+        /*
+        * TODO
+        *  multiple worlds support (lobby, generated world)
+        *  world name in constructor, try to load tilemap from file
+        *  file not found: generate world
+        * Alternative: 2 Classes that extend RoguelikeWorld
+        */
         this.settings = settings;
 
         //TODO: Create music system
