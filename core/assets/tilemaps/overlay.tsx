@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.5" tiledversion="1.7.2" name="overlay" tilewidth="224" tileheight="135" tilecount="18" columns="0">
+<tileset version="1.5" tiledversion="1.7.2" name="overlay" tilewidth="224" tileheight="135" tilecount="19" columns="0">
  <grid orientation="orthogonal" width="1" height="1"/>
  <tile id="0">
   <image width="224" height="135" source="../images/world/building.png"/>
@@ -54,5 +54,8 @@
  </tile>
  <tile id="23">
   <image width="32" height="32" source="../images/world/fence_16.png"/>
+ </tile>
+ <tile id="24">
+  <image width="32" height="64" source="../images/world/portal.png"/>
  </tile>
 </tileset>

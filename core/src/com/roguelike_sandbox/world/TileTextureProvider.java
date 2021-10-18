@@ -4,19 +4,28 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class TileTextureProvider {
-    Texture textureAtlas;
+    private final Map<String, Texture> textures;
 
     public TileTextureProvider() {
-        textureAtlas = new Texture(Gdx.files.internal("images/world/texture_atlas.png"));
+        textures = new HashMap<>();
+
+        for (TileTexture tt : TileTexture.values()) {
+            Texture texture = new Texture(Gdx.files.internal(tt.filename));
+            textures.put(tt.filename, texture);
+        }
     }
 
     public TextureRegion getTexture(TileTexture tileTexture) {
-        TextureRegion textureRegion = new TextureRegion(textureAtlas, tileTexture.x, tileTexture.y, tileTexture.width, tileTexture.height);
-        return textureRegion;
+        return new TextureRegion(textures.get(tileTexture.filename), 0, 0, tileTexture.width, tileTexture.height);
     }
 
     public void dispose() {
-        textureAtlas.dispose();
+        for (Texture t : textures.values()) {
+            t.dispose();
+        }
     }
 }

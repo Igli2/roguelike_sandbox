@@ -20,29 +20,20 @@ import com.roguelike_sandbox.character.CollisionDetection;
 import com.roguelike_sandbox.character.Player;
 import com.roguelike_sandbox.game.GameSettings;
 
-public class RoguelikeWorld {
+public class RoguelikeWorldBase {
 
-    private static final int TILE_SIZE = 32;
-
-    // private final int seed;
+    protected static final int TILE_SIZE = 32;
 
     private final OrthographicCamera camera;
-    private final TiledMap tiledMap;
-    private final TiledMapRenderer tiledMapRenderer;
+    protected TiledMap tiledMap;
+    protected TiledMapRenderer tiledMapRenderer;
     private final World box2DWorld;
     private final ExtendViewport viewport;
     private final GameSettings settings;
     private MusicPlayer musicPlayer;
     private Array<Body> bodies;
 
-    public RoguelikeWorld(GameSettings settings) {
-        /*
-        * TODO
-        *  multiple worlds support (lobby, generated world)
-        *  world name in constructor, try to load tilemap from file
-        *  file not found: generate world
-        * Alternative: 2 Classes that extend RoguelikeWorld
-        */
+    public RoguelikeWorldBase(GameSettings settings) {
         this.settings = settings;
 
         //TODO: Create music system
@@ -51,8 +42,6 @@ public class RoguelikeWorld {
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
 
-        // seed = new Random().nextInt(Integer.MAX_VALUE);
-
         camera = new OrthographicCamera();
         viewport = new ExtendViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera);
         camera.zoom -= 0.8f;
@@ -60,11 +49,7 @@ public class RoguelikeWorld {
         camera.update();
 
         box2DWorld = new World(new Vector2(0, 0), true);
-        tiledMap = new TmxMapLoader().load("tilemaps/lobby.tmx");
-        tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
-
         box2DWorld.setContactListener(new CollisionDetection());
-        createBodies();
     }
 
     private static PolygonShape createPolygon(RectangleMapObject rectangleObject) {
@@ -78,36 +63,6 @@ public class RoguelikeWorld {
     public void setMusicPlayer(MusicPlayer musicPlayer) {
         this.musicPlayer = musicPlayer;
     }
-
-    /* public void generateTileMap() {
-        float w = Gdx.graphics.getWidth();
-        float h = Gdx.graphics.getHeight();
-
-        MapLayers layers = tiledMap.getLayers();
-        TiledMapTileLayer layer1 = new TiledMapTileLayer(1000, 800, World.TILE_SIZE, World.TILE_SIZE);
-
-        TiledMapTileLayer.Cell dirtCell = new TiledMapTileLayer.Cell();
-        dirtCell.setTile(new StaticTiledMapTile(textureProvider.getTexture(TileTexture.DIRT)));
-        TiledMapTileLayer.Cell lavaCell = new TiledMapTileLayer.Cell();
-        lavaCell.setTile(new StaticTiledMapTile(textureProvider.getTexture(TileTexture.LAVA)));
-
-        for (int i = 0; i < w / World.TILE_SIZE; i++) {
-            for (int j = 0; j < h / World.TILE_SIZE; j++) {
-                double noiseValue = getNoiseValue(i, j);
-                if (noiseValue < -0.3) {
-                    layer1.setCell(i, j, lavaCell);
-                } else {
-                    layer1.setCell(i, j, dirtCell);
-                }
-            }
-        }
-
-        layers.add(layer1);
-    } */
-
-    /* private double getNoiseValue(int x, int y) {
-        return ImprovedNoise.noise((float) x / 20, (float) y / 20, seed / 10);
-    } */
 
     public void setCameraPos(Vector2 newPosition) {
         camera.position.x = newPosition.x;
@@ -141,7 +96,7 @@ public class RoguelikeWorld {
             if (obj instanceof RectangleMapObject) {
                 RectangleMapObject rectObj = (RectangleMapObject) obj;
                 // rectObj.getRectangle()
-                PolygonShape shape = RoguelikeWorld.createPolygon(rectObj);
+                PolygonShape shape = RoguelikeWorldBase.createPolygon(rectObj);
 
                 BodyDef bd = new BodyDef();
                 bd.type = BodyDef.BodyType.StaticBody;

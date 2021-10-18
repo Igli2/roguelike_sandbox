@@ -5,12 +5,15 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.roguelike_sandbox.character.EntityManager;
 import com.roguelike_sandbox.input.InputListener;
-import com.roguelike_sandbox.world.RoguelikeWorld;
+import com.roguelike_sandbox.world.RoguelikeWorldBase;
+import com.roguelike_sandbox.world.RoguelikeWorldGenerated;
+import com.roguelike_sandbox.world.RoguelikeWorldStatic;
 
 public class RoguelikeSandbox extends ApplicationAdapter {
 
     private static SpriteBatch batch;
-    private static RoguelikeWorld world;
+    private static RoguelikeWorldStatic lobbyWorld;
+    private static RoguelikeWorldGenerated generatedWorld;
     private static InputListener listener;
     private static EntityManager entityManager;
     private static GameSettings settings;
@@ -25,21 +28,25 @@ public class RoguelikeSandbox extends ApplicationAdapter {
 
         listener = new InputListener();
         settings = new GameSettings(1f, 1f);
-        world = new RoguelikeWorld(settings);
-        // world.generateTileMap();
+        lobbyWorld = new RoguelikeWorldStatic(settings, "tilemaps/lobby.tmx");
+        generatedWorld = new RoguelikeWorldGenerated(settings);
 
-        entityManager = new EntityManager(batch, world);
+        entityManager = new EntityManager(batch, lobbyWorld);
     }
 
     @Override
     public void render() {
         batch.begin();
         ScreenUtils.clear(0, 0, 0, 1);
+
         // keyboard input
         listener.run(entityManager.getPlayer());
-        world.render(entityManager.getPlayer());
+
+        // lobbyWorld.render(entityManager.getPlayer());
+        generatedWorld.render(entityManager.getPlayer());
         entityManager.runEntities();
         entityManager.renderEntities();
+
         batch.end();
     }
 
@@ -47,6 +54,7 @@ public class RoguelikeSandbox extends ApplicationAdapter {
     public void dispose() {
         //TODO: dispose all disposable objects
         batch.dispose();
-        world.dispose();
+        lobbyWorld.dispose();
+        generatedWorld.dispose();
     }
 }
