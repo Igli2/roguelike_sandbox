@@ -3,15 +3,15 @@ package com.roguelike_sandbox.screen;
 import com.badlogic.gdx.Screen;
 import com.roguelike_sandbox.game.GameClass;
 import com.roguelike_sandbox.scenes.Hud;
-import com.roguelike_sandbox.world.RogueLikeWorld;
+import com.roguelike_sandbox.world.AbstractRoguelikeWorld;
 
 public class PlayScreen implements Screen {
 
     private final Hud hud;
     private final GameClass game;
-    private final RogueLikeWorld world;
+    private final AbstractRoguelikeWorld world;
 
-    public PlayScreen(GameClass game, RogueLikeWorld world) {
+    public PlayScreen(GameClass game, AbstractRoguelikeWorld world) {
         hud = new Hud(game.batch);
         this.game = game;
         this.world = world;

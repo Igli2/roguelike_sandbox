@@ -4,7 +4,7 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.roguelike_sandbox.game.GameClass;
 
-public class RoguelikeWorldStatic extends RogueLikeWorld {
+public class RoguelikeWorldStatic extends AbstractRoguelikeWorld {
     public RoguelikeWorldStatic(GameClass game, String tilemapFile) {
         super(game);
 

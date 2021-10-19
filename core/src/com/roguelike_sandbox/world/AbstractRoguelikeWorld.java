@@ -20,7 +20,7 @@ import com.roguelike_sandbox.character.EntityManager;
 import com.roguelike_sandbox.game.GameClass;
 import com.roguelike_sandbox.game.GameSettings;
 
-public class RogueLikeWorld {
+public abstract class AbstractRoguelikeWorld {
 
     protected static final int TILE_SIZE = 32;
 
@@ -37,7 +37,7 @@ public class RogueLikeWorld {
     private MusicPlayer musicPlayer;
     private Array<Body> bodies;
 
-    public RogueLikeWorld(GameClass game) {
+    public AbstractRoguelikeWorld(GameClass game) {
         this.game = game;
         settings = game.settings;
 
@@ -130,7 +130,7 @@ public class RogueLikeWorld {
                 bd.type = BodyDef.BodyType.StaticBody;
                 Body body = box2DWorld.createBody(bd);
                 FixtureDef fixture = new FixtureDef();
-                fixture.shape = RogueLikeWorld.createPolygon(rectObj);
+                fixture.shape = AbstractRoguelikeWorld.createPolygon(rectObj);
                 body.createFixture(fixture);
                 bodies.add(body);
             }
