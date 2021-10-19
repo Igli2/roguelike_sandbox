@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.roguelike_sandbox.audio.MusicEffect;
 import com.roguelike_sandbox.audio.MusicPlayer;
 import com.roguelike_sandbox.character.EntityManager;
+import com.roguelike_sandbox.character.Player;
 import com.roguelike_sandbox.game.GameClass;
 import com.roguelike_sandbox.game.GameSettings;
 
@@ -29,7 +30,7 @@ public abstract class AbstractRoguelikeWorld {
     private final ExtendViewport viewport;
     private final GameSettings settings;
     private final GameClass game;
-    private final EntityManager entityManager;
+    public final EntityManager entityManager;
     protected TiledMap tiledMap;
     protected TiledMapRenderer tiledMapRenderer;
     private Vector2 cam_minPosition;
@@ -54,7 +55,8 @@ public abstract class AbstractRoguelikeWorld {
         camera.update();
 
         box2DWorld = new World(new Vector2(0, 0), true);
-        entityManager = new EntityManager(game, this);
+        entityManager = new EntityManager(game);
+        entityManager.addPlayer(this);
     }
 
     private static PolygonShape createPolygon(RectangleMapObject rectangleObject) {
@@ -109,7 +111,7 @@ public abstract class AbstractRoguelikeWorld {
         tiledMapRenderer.render();
         entityManager.render();
         //TODO: remove debug
-        debug();
+        //debug();
         box2DWorld.step(1f / 60f, 6, 2);
     }
 
@@ -147,5 +149,9 @@ public abstract class AbstractRoguelikeWorld {
 
     public void resizeViewport(int width, int height) {
         viewport.update(width, height);
+    }
+
+    public Player getPlayer() {
+        return entityManager.getPlayer();
     }
 }

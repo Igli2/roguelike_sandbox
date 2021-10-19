@@ -12,7 +12,7 @@ public class PlayScreen implements Screen {
     private final AbstractRoguelikeWorld world;
 
     public PlayScreen(GameClass game, AbstractRoguelikeWorld world) {
-        hud = new Hud(game.batch);
+        hud = new Hud(world.getPlayer());
         this.game = game;
         this.world = world;
     }
@@ -28,6 +28,7 @@ public class PlayScreen implements Screen {
         game.batch.begin();
         world.render(delta);
         game.batch.end();
+        hud.render();
     }
 
     @Override

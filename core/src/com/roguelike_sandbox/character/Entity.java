@@ -6,12 +6,14 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.roguelike_sandbox.behaviour.Behaviour;
+import com.roguelike_sandbox.world.AbstractRoguelikeWorld;
 
 public abstract class Entity extends Sprite {
 
     public static final float GROUND_FRICTION = 0.7F;
     public static final int SPRITE_SIZE = 50;
-    protected final Behaviour.BEHAVIOUR_TYPE behaviour;
+    protected Behaviour.BEHAVIOUR_TYPE behaviour;
+    private final AbstractRoguelikeWorld abstractWorld;
     private final int level;
     private final int vitality;
     private final int constitution;
@@ -19,7 +21,6 @@ public abstract class Entity extends Sprite {
     private final int dexterity;
     private final int intelligence;
     private final int luck;
-    public World world;
     public Body body;
     protected Sprite sprite;
     protected double movementSpeed;
@@ -38,7 +39,7 @@ public abstract class Entity extends Sprite {
     private double physicResistance;
     private double magicResistance;
 
-    public Entity(TextureAtlas textureAtlas, World world, Vector2 position, Behaviour.BEHAVIOUR_TYPE behaviour, int level, int vitality, int constitution, int strength, int dexterity, int intelligence, int luck, EntityTexture texture) {
+    public Entity(TextureAtlas textureAtlas, AbstractRoguelikeWorld abstractWorld, Vector2 position, Behaviour.BEHAVIOUR_TYPE behaviour, int level, int vitality, int constitution, int strength, int dexterity, int intelligence, int luck, EntityTexture texture) {
         this.behaviour = behaviour;
         this.velocity = new Vector2(0, 0);
         this.level = level;
@@ -49,12 +50,12 @@ public abstract class Entity extends Sprite {
         this.intelligence = intelligence;
         this.luck = luck;
 
-        this.world = world;
+        this.abstractWorld = abstractWorld;
 
-        initialise(textureAtlas, texture, position);
+        initialise(textureAtlas, texture, position, abstractWorld);
     }
 
-    public Entity(TextureAtlas textureAtlas, World world, Vector2 position, Behaviour.BEHAVIOUR_TYPE behaviour, EntityTexture texture) {//test only
+    public Entity(TextureAtlas textureAtlas, AbstractRoguelikeWorld abstractWorld, Vector2 position, Behaviour.BEHAVIOUR_TYPE behaviour, EntityTexture texture) {//test only
         this.behaviour = behaviour;
         this.velocity = new Vector2(0, 0);
         this.level = 2;
@@ -65,12 +66,13 @@ public abstract class Entity extends Sprite {
         this.intelligence = 2;
         this.luck = 2;
 
-        this.world = world;
+        this.abstractWorld = abstractWorld;
 
-        initialise(textureAtlas, texture, position);
+        initialise(textureAtlas, texture, position, abstractWorld);
     }
 
-    private void initialise(TextureAtlas textureAtlas, EntityTexture texture, Vector2 position) {
+    private void initialise(TextureAtlas textureAtlas, EntityTexture texture, Vector2 position, AbstractRoguelikeWorld abstractRoguelikeWorld) {
+        abstractRoguelikeWorld.entityManager.addEntity(this);
         calculateStats();
 
         sprite = textureAtlas.createSprite(texture.texture);
@@ -83,11 +85,11 @@ public abstract class Entity extends Sprite {
         bd.type = BodyDef.BodyType.DynamicBody;
         bd.position.set(position);
 
-        body = world.createBody(bd);
+        body = abstractWorld.getBox2DWorld().createBody(bd);
 
         FixtureDef fixtureDef = new FixtureDef();
         CircleShape shape = new CircleShape();
-        shape.setRadius(sprite.getWidth());
+        shape.setRadius(sprite.getWidth() / 2f);
         fixtureDef.shape = shape;
 
         body.setActive(true);
@@ -207,6 +209,7 @@ public abstract class Entity extends Sprite {
     }
 
     public void addForce(Vector2 direction) {
+        lastFace = direction;
         direction.setLength((float) movementSpeed * 2);
         acceleration = acceleration.add(direction);
     }
@@ -237,7 +240,8 @@ public abstract class Entity extends Sprite {
     }
 
     public void remove() {
-        world.destroyBody(body);
+        abstractWorld.entityManager.removeEntity(this);
+        abstractWorld.getBox2DWorld().destroyBody(body);
     }
 
     public Vector2 getPosition() {
@@ -254,5 +258,19 @@ public abstract class Entity extends Sprite {
 
     public Fixture getFixture() {
         return body.getFixtureList().first();
+    }
+
+    public void setHealth(int amount) {
+        health = amount;
+    }
+
+    public AbstractRoguelikeWorld getAbstractWorld() {
+        return abstractWorld;
+    }
+
+    private Vector2 lastFace;
+
+    public Vector2 getFaceDirection() {
+        return lastFace;
     }
 }
