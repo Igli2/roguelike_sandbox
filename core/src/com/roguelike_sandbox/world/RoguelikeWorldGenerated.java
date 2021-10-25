@@ -26,8 +26,8 @@ public class RoguelikeWorldGenerated extends AbstractRoguelikeWorld {
     }
 
     public void generateTileMap() {
-        float w = 100;
-        float h = 100;
+        float w = 1000;
+        float h = 1000;
 
         MapLayers layers = tiledMap.getLayers();
         TiledMapTileLayer layer1 = new TiledMapTileLayer(1000, 800, AbstractRoguelikeWorld.TILE_SIZE, AbstractRoguelikeWorld.TILE_SIZE);
@@ -35,16 +35,24 @@ public class RoguelikeWorldGenerated extends AbstractRoguelikeWorld {
 
         TiledMapTileLayer.Cell dirtCell = new TiledMapTileLayer.Cell();
         dirtCell.setTile(new StaticTiledMapTile(textureProvider.getTexture(TileTexture.GROUND)));
-        TiledMapTileLayer.Cell lavaCell = new TiledMapTileLayer.Cell();
-        lavaCell.setTile(new StaticTiledMapTile(textureProvider.getTexture(TileTexture.ROCKS)));
+        TiledMapTileLayer.Cell rocksCell = new TiledMapTileLayer.Cell();
+        rocksCell.setTile(new StaticTiledMapTile(textureProvider.getTexture(TileTexture.ROCKS)));
+        TiledMapTileLayer.Cell sandCell = new TiledMapTileLayer.Cell();
+        sandCell.setTile(new StaticTiledMapTile(textureProvider.getTexture(TileTexture.SAND)));
+        TiledMapTileLayer.Cell lakeCell = new TiledMapTileLayer.Cell();
+        lakeCell.setTile(new StaticTiledMapTile(textureProvider.getTexture(TileTexture.LAKE)));
 
         for (int i = 0; i < w / AbstractRoguelikeWorld.TILE_SIZE; i++) {
             for (int j = 0; j < h / AbstractRoguelikeWorld.TILE_SIZE; j++) {
                 double noiseValue = getNoiseValue(i, j);
-                if (noiseValue < -0.1) {
-                    layer1.setCell(i, j, lavaCell);
-                } else {
+                if (noiseValue < -0.30) {
+                    layer1.setCell(i, j, lakeCell);
+                } else if (noiseValue < -0.24) {
+                    layer1.setCell(i, j, sandCell);
+                } else if (noiseValue < 0.25) {
                     layer1.setCell(i, j, dirtCell);
+                } else {
+                    layer1.setCell(i, j, rocksCell);
                 }
             }
         }
