@@ -1,6 +1,5 @@
 package com.roguelike_sandbox.world;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -8,20 +7,17 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.roguelike_sandbox.game.GameClass;
 
-import java.util.Random;
-
 public class RoguelikeWorldGenerated extends AbstractRoguelikeWorld {
 
-    private final int seed;
     private final TileTextureProvider textureProvider;
+    private final int seed;
 
-    public RoguelikeWorldGenerated(GameClass game) {
+    public RoguelikeWorldGenerated(GameClass game, String worldType, int seed) {
         super(game);
 
-        seed = new Random().nextInt(Integer.MAX_VALUE);
+        this.seed = seed;
 
-        textureProvider = new TileTextureProvider();
-
+        textureProvider = new TileTextureProvider(worldType);
         tiledMap = new TiledMap();
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
@@ -29,18 +25,18 @@ public class RoguelikeWorldGenerated extends AbstractRoguelikeWorld {
         setCameraPositions();
     }
 
-    // TODO: add tileset as parameter for different biomes
     public void generateTileMap() {
-        float w = Gdx.graphics.getWidth();
-        float h = Gdx.graphics.getHeight();
+        float w = 100;
+        float h = 100;
 
         MapLayers layers = tiledMap.getLayers();
         TiledMapTileLayer layer1 = new TiledMapTileLayer(1000, 800, AbstractRoguelikeWorld.TILE_SIZE, AbstractRoguelikeWorld.TILE_SIZE);
+        layer1.setName("Ground");
 
         TiledMapTileLayer.Cell dirtCell = new TiledMapTileLayer.Cell();
-        dirtCell.setTile(new StaticTiledMapTile(textureProvider.getTexture(TileTexture.DIRT)));
+        dirtCell.setTile(new StaticTiledMapTile(textureProvider.getTexture(TileTexture.GROUND)));
         TiledMapTileLayer.Cell lavaCell = new TiledMapTileLayer.Cell();
-        lavaCell.setTile(new StaticTiledMapTile(textureProvider.getTexture(TileTexture.PATH)));
+        lavaCell.setTile(new StaticTiledMapTile(textureProvider.getTexture(TileTexture.ROCKS)));
 
         for (int i = 0; i < w / AbstractRoguelikeWorld.TILE_SIZE; i++) {
             for (int j = 0; j < h / AbstractRoguelikeWorld.TILE_SIZE; j++) {

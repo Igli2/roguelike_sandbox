@@ -8,6 +8,8 @@ import com.roguelike_sandbox.screen.PlayScreen;
 import com.roguelike_sandbox.world.RoguelikeWorldGenerated;
 import com.roguelike_sandbox.world.RoguelikeWorldStatic;
 
+import java.util.Random;
+
 public class GameClass extends Game {
 
     public static final int V_WIDTH = 1080, V_HEIGHT = 720;
@@ -17,14 +19,16 @@ public class GameClass extends Game {
     private static RoguelikeWorldGenerated generatedWorld;
     public SpriteBatch batch;
     public GameSettings settings;
+    private int seed;
 
     @Override
     public void create() {
         batch = new SpriteBatch();
         settings = new GameSettings(1f, 1f);
 
+        seed = new Random().nextInt(Integer.MAX_VALUE);
 
-        setScreen(new PlayScreen(this, new RoguelikeWorldStatic(this, "")));
+        setScreen(new PlayScreen(this, new RoguelikeWorldGenerated(this, "fire", seed)));
     }
 
     @Override

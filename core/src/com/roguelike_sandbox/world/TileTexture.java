@@ -1,8 +1,8 @@
 package com.roguelike_sandbox.world;
 
 public enum TileTexture {
-    DIRT(32, 32, "images/world/dirt.png"),
-    PATH(32, 32, "images/world/path_1.png");
+    GROUND(32, 32, "ground.png"),
+    ROCKS(32, 32, "rocks.png");
 
     public final int width;
     public final int height;
