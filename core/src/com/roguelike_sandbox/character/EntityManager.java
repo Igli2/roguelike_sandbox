@@ -23,7 +23,7 @@ public class EntityManager {
     }
 
     public void addPlayer(AbstractRoguelikeWorld world) {
-        player = new Wizard(textureAtlas, world, new Vector2(1000, 1000));
+        player = new Wizard(textureAtlas, world, new Vector2(32, 32));
     }
 
     public void addEntity(Entity e) {

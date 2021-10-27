@@ -1,5 +1,6 @@
 package com.roguelike_sandbox.world;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -26,8 +27,8 @@ public class RoguelikeWorldGenerated extends AbstractRoguelikeWorld {
     }
 
     public void generateTileMap() {
-        float w = 1000;
-        float h = 1000;
+        float w = Gdx.graphics.getWidth() / AbstractRoguelikeWorld.TILE_SIZE + 1;
+        float h = Gdx.graphics.getHeight() / AbstractRoguelikeWorld.TILE_SIZE + 1;
 
         MapLayers layers = tiledMap.getLayers();
         TiledMapTileLayer layer1 = new TiledMapTileLayer(1000, 800, AbstractRoguelikeWorld.TILE_SIZE, AbstractRoguelikeWorld.TILE_SIZE);
@@ -42,8 +43,8 @@ public class RoguelikeWorldGenerated extends AbstractRoguelikeWorld {
         TiledMapTileLayer.Cell lakeCell = new TiledMapTileLayer.Cell();
         lakeCell.setTile(new StaticTiledMapTile(textureProvider.getTexture(TileTexture.LAKE)));
 
-        for (int i = 0; i < w / AbstractRoguelikeWorld.TILE_SIZE; i++) {
-            for (int j = 0; j < h / AbstractRoguelikeWorld.TILE_SIZE; j++) {
+        for (int i = 0; i < w; i++) {
+            for (int j = 0; j < h; j++) {
                 double noiseValue = getNoiseValue(i, j);
                 if (noiseValue < -0.30) {
                     layer1.setCell(i, j, lakeCell);

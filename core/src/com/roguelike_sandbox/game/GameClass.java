@@ -29,6 +29,7 @@ public class GameClass extends Game {
         seed = new Random().nextInt(Integer.MAX_VALUE);
 
         setScreen(new PlayScreen(this, new RoguelikeWorldGenerated(this, "fire", seed)));
+        // setScreen(new PlayScreen(this, new RoguelikeWorldStatic(this, "tilemaps/lobby.tmx")));
     }
 
     @Override

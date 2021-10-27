@@ -73,9 +73,13 @@ public abstract class AbstractRoguelikeWorld {
         int tilesOnScreenX = Gdx.graphics.getWidth() / TILE_SIZE;
         int tilesOnScreenY = Gdx.graphics.getHeight() / TILE_SIZE;
 
-        cam_minPosition = new Vector2(tilesOnScreenX * TILE_SIZE / 2f * camera.zoom + 2f, tilesOnScreenY * TILE_SIZE / 2f * camera.zoom + 10f);
-        cam_maxPosition = new Vector2(tilesX * TILE_SIZE - cam_minPosition.x, tilesY * TILE_SIZE - cam_minPosition.y);
-
+        if (this instanceof RoguelikeWorldGenerated) {
+            cam_minPosition = new Vector2(Integer.MIN_VALUE, Integer.MIN_VALUE);
+            cam_maxPosition = new Vector2(Integer.MAX_VALUE, Integer.MAX_VALUE);
+        } else {
+            cam_minPosition = new Vector2(tilesOnScreenX * TILE_SIZE / 2f * camera.zoom + 2f, tilesOnScreenY * TILE_SIZE / 2f * camera.zoom + 10f);
+            cam_maxPosition = new Vector2(tilesX * TILE_SIZE - cam_minPosition.x, tilesY * TILE_SIZE - cam_minPosition.y);
+        }
     }
 
     public void setMusicPlayer(MusicPlayer musicPlayer) {
